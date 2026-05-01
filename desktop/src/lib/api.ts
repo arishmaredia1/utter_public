@@ -21,6 +21,7 @@ export interface RegisterPayload {
   r2Key: string;
   durationMs: number;
   sizeBytes: number;
+  mimeType?: string;
 }
 
 export async function registerRecording(session: string, payload: RegisterPayload): Promise<string> {

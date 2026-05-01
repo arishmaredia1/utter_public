@@ -18,6 +18,7 @@ export interface SessionResult {
   r2Key: string;
   durationMs: number;
   sizeBytes: number;
+  mimeType: string;
 }
 
 interface StartArgs {
@@ -41,6 +42,7 @@ export class RecorderSession {
   private rejectResult: ((e: unknown) => void) | null = null;
   private pendingPushes: Promise<void>[] = [];
   private r2Key = "";
+  private mimeType = "video/webm";
 
   async start({ secrets, audioMode, onUpdate }: StartArgs): Promise<SessionResult> {
     if (this.state !== "idle") throw new Error("Already running");
@@ -50,6 +52,28 @@ export class RecorderSession {
       this.capture = await startCapture({ mode: audioMode });
       this.label = this.capture.sourceLabel;
 
+      // Pick the best codec the host actually supports. Chromium-based hosts
+      // (WebView2 on Windows) accept WebM+VP9+Opus; WKWebView on macOS only
+      // accepts MP4+H.264+AAC. Fall back through a list and surface a clear
+      // error if nothing matches.
+      const codecCandidates = [
+        "video/webm;codecs=vp9,opus",
+        "video/webm;codecs=vp8,opus",
+        "video/webm",
+        "video/mp4;codecs=h264,aac",
+        "video/mp4;codecs=avc1,mp4a",
+        "video/mp4",
+      ];
+      const mimeType = codecCandidates.find((c) => MediaRecorder.isTypeSupported(c));
+      if (!mimeType) {
+        throw new Error(
+          "MediaRecorder doesn't support any known codec on this platform. WKWebView typically accepts MP4 only.",
+        );
+      }
+      const ext = mimeType.startsWith("video/mp4") ? "mp4" : "webm";
+      const contentType = mimeType.startsWith("video/mp4") ? "video/mp4" : "video/webm";
+      this.mimeType = contentType;
+
       const s3 = new S3Client({
         region: "auto",
         endpoint: `https://${secrets.r2_account_id}.r2.cloudflarestorage.com`,
@@ -58,12 +82,12 @@ export class RecorderSession {
           secretAccessKey: secrets.r2_secret_access_key,
         },
       });
-      this.r2Key = `recordings/${dateFolder()}/${rid()}.webm`;
-      this.uploader = new Uploader({ s3, bucket: secrets.r2_bucket, key: this.r2Key, contentType: "video/webm" });
+      this.r2Key = `recordings/${dateFolder()}/${rid()}.${ext}`;
+      this.uploader = new Uploader({ s3, bucket: secrets.r2_bucket, key: this.r2Key, contentType });
       await this.uploader.start();
 
       const recorder = new MediaRecorder(this.capture.stream, {
-        mimeType: "video/webm; codecs=vp9,opus",
+        mimeType,
         videoBitsPerSecond: 2_500_000,
       });
       recorder.ondataavailable = (ev) => {
@@ -114,7 +138,7 @@ export class RecorderSession {
       const durationMs = Math.max(0, performance.now() - this.startedAt);
       this.setState("completed", () => {});
       this.cleanup();
-      this.resolveResult?.({ r2Key: this.r2Key, durationMs, sizeBytes: result.size });
+      this.resolveResult?.({ r2Key: this.r2Key, durationMs, sizeBytes: result.size, mimeType: this.mimeType });
     } catch (e) {
       this.err = String(e);
       this.rejectResult?.(e);

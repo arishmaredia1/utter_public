@@ -30,7 +30,7 @@ export interface Recording {
   status: RecordingStatus;
   r2Key: string;
   r2Bucket: string;
-  mimeType: "video/webm";
+  mimeType: "video/webm" | "video/mp4";
   transcript: Transcript | null;
   chats: ChatMessage[];
   shareToken: string | null;

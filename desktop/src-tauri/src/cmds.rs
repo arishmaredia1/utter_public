@@ -60,6 +60,7 @@ pub struct RegisterPayload {
     pub r2_key: String,
     pub duration_ms: i64,
     pub size_bytes: i64,
+    pub mime_type: Option<String>,
 }
 
 #[tauri::command]
@@ -76,7 +77,7 @@ pub async fn register_recording(state: State<'_, AppState>, session: String, pay
         status: "transcribing".to_string(),
         r2_key: payload.r2_key,
         r2_bucket: env.r2_bucket,
-        mime_type: "video/webm".to_string(),
+        mime_type: payload.mime_type.unwrap_or_else(|| "video/webm".to_string()),
         transcript: None,
         chats: Vec::<ChatMessageDoc>::new(),
         share_token: None,

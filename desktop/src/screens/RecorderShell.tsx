@@ -29,13 +29,21 @@ export function RecorderShell({ mode, onDone }: Props) {
           r2Key: result.r2Key,
           durationMs: Math.round(result.durationMs),
           sizeBytes: result.sizeBytes,
+          mimeType: result.mimeType,
         });
         setPhase("transcribing");
-        try { await transcribeRecording(token, id, result.r2Key); } catch { /* shown by status */ }
+        try { await transcribeRecording(token, id, result.r2Key); } catch (e) { console.error("transcribe failed:", e); }
         setPhase("done");
         setTimeout(onDone, 1200);
       })
-      .catch((e) => setError(String(e)));
+      .catch((e) => {
+        console.error("Recording failed:", e);
+        const detail =
+          e instanceof Error
+            ? `${e.name}: ${e.message}${e.stack ? "\n" + e.stack : ""}`
+            : String(e);
+        setError(detail);
+      });
     return () => {
       sessRef.current?.cancel();
       sessRef.current = null;
@@ -50,10 +58,10 @@ export function RecorderShell({ mode, onDone }: Props) {
           <p className="font-mono text-[11px] uppercase tracking-wider text-rec mb-3">{reason.kicker}</p>
           <h1 className="font-display text-3xl font-semibold tracking-tighter mb-3">{reason.title}</h1>
           <div className="text-text-1 text-sm leading-relaxed mb-5">{reason.body}</div>
-          <details className="mb-6">
-            <summary className="font-mono text-[10px] uppercase tracking-wider text-text-2 cursor-pointer hover:text-text-1">Raw error</summary>
-            <pre className="font-mono text-[11px] text-text-2 mt-2 whitespace-pre-wrap break-words">{error}</pre>
-          </details>
+          <div className="mb-6">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-text-2 mb-1.5">Raw error</p>
+            <pre className="font-mono text-[11px] text-text-2 whitespace-pre-wrap break-words bg-bg-2 border border-line-1 rounded p-3 max-h-48 overflow-auto">{error || "(empty)"}</pre>
+          </div>
           <button onClick={onDone} className="text-accent hover:text-accent-hover font-mono text-sm">← Back</button>
         </div>
       </main>
@@ -146,6 +154,20 @@ function classifyError(raw: string): FriendlyError {
       kicker: "Hardware in use",
       title: "Another app is using your microphone or camera.",
       body: <p>Close any other app that might be holding the mic (Zoom, Teams, OBS, the browser) and try again.</p>,
+    };
+  }
+
+  if (msg.includes("notsupportederror") || msg.includes("doesn't support any known codec")) {
+    return {
+      kicker: "Codec mismatch",
+      title: "Your platform's MediaRecorder doesn't accept the requested codec.",
+      body: (
+        <p>
+          This is unusual — Utter falls back through WebM and MP4 codecs automatically. If you're
+          on a very old macOS or running inside a stripped-down WKWebView, please file a bug with
+          the raw error below.
+        </p>
+      ),
     };
   }
 
