@@ -34,7 +34,10 @@ export async function getRecordingsCollection(): Promise<Collection<RecordingDoc
 export async function ensureIndexes(): Promise<void> {
   const col = await getRecordingsCollection();
   await col.createIndex({ createdAt: -1 }, { name: "createdAt_-1" });
-  await col.createIndex({ shareToken: 1 }, { name: "shareToken_1", unique: true, sparse: true });
+  await col.createIndex(
+    { shareToken: 1 },
+    { name: "shareToken_1", unique: true, partialFilterExpression: { shareToken: { $type: "string" } } }
+  );
 }
 
 /** Reset the cached client and db. Tests only. */
