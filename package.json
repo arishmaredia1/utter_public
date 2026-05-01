@@ -8,5 +8,11 @@
     "typecheck": "pnpm -r typecheck"
   },
   "engines": { "node": ">=20" },
-  "packageManager": "pnpm@9.12.0"
+  "packageManager": "pnpm@9.12.0",
+  "pnpm": {
+    "overrides": {
+      "@types/react": "npm:types-react@rc",
+      "@types/react-dom": "npm:types-react-dom@rc"
+    }
+  }
 }
