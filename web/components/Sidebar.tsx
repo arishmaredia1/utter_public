@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
 
-export function Sidebar({ active }: { active: "recordings" | "shared" | "settings" }) {
+export function Sidebar({ active }: { active: "recordings" }) {
   return (
     <aside className="w-[220px] shrink-0 border-r border-line-1 bg-black/[0.12] flex flex-col">
       <div className="px-6 pt-6 pb-7 flex items-center gap-2.5">
@@ -10,8 +10,6 @@ export function Sidebar({ active }: { active: "recordings" | "shared" | "setting
       </div>
       <nav className="flex flex-col">
         <NavItem href="/" label="Recordings" active={active === "recordings"} />
-        <NavItem href="/shared" label="Shared" active={active === "shared"} />
-        <NavItem href="/settings" label="Settings" active={active === "settings"} />
       </nav>
       <div className="mt-auto px-6 py-5 border-t border-line-1 font-mono text-[10px] uppercase tracking-wider text-text-2">
         <div className="flex justify-between mb-1.5">
