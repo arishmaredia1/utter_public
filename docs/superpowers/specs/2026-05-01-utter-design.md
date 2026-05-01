@@ -126,22 +126,42 @@ MongoDB writes happen Rust-side using the official `mongodb` crate. This keeps t
 
 ### Branding tokens
 
+Approved 2026-05-01 after frontend-design pass. Aesthetic: "engineering instrument" — Linear meets a hardware audio meter. Quiet, dark, technical. Mono numbers wherever a human reads numbers (timestamps, durations, levels). One cool blue accent. Asymmetric layouts where they earn it. Subtle SVG grain texture and faint blue radial gradients prevent the flat-dark-gray look.
+
+```css
+/* Color */
+--bg-0:        #08090C   /* canvas */
+--bg-1:        #0E1117   /* card */
+--bg-2:        #161A22   /* elevated card */
+--bg-3:        #1F2530   /* hover / inset chip */
+--line-1:      #232936   /* hairlines */
+--line-2:      #2D3548   /* prominent borders */
+--text-0:      #ECEEF2   /* primary */
+--text-1:      #8B92A4   /* secondary */
+--text-2:      #5A6072   /* muted / mono labels */
+--accent:      #4F8AF7   /* the only chromatic accent */
+--accent-2:    #6BA3FF   /* hover */
+--accent-tint: rgba(79,138,247,.12)
+--rec:         #FF4D58   /* recording dot, with warmth */
+--ok:          #12B981
+--warn:        #F5A524
+
+/* Typography */
+--display: 'Bricolage Grotesque', serif;   /* variable, optical sizing */
+--sans:    'Geist', system-ui, sans-serif;
+--mono:    'Geist Mono', ui-monospace, monospace;
+/* All three are free on Google Fonts. */
+
+/* Geometry */
+radius: 4px (small chips), 6px (controls), 10–14px (cards/frames)
+hairlines: 1px solid var(--line-1)
+
+/* Texture */
+- SVG fractal-noise grain overlay, 3.5% opacity, mix-blend overlay
+- Two faint radial gradients on canvas for atmospheric depth (top-center + bottom-right)
 ```
---bg-0:        #0B0D11    /* canvas */
---bg-1:        #0F1115    /* card */
---bg-2:        #1A1D24    /* elevated card */
---bg-3:        #2A2F3A    /* hover */
---border:      #2F3441
---text-0:      #F4F5F7    /* primary */
---text-1:      #A8ADBA    /* secondary */
---text-2:      #6B7280    /* muted */
---accent:      #3B82F6    /* primary blue */
---accent-2:    #2563EB    /* hover blue */
---danger:      #EF4444    /* recording dot, errors */
---ok:          #10B981
-font:          Inter (variable), system-ui fallback
-radius:        6px (controls), 10px (cards)
-```
+
+The mockup at `docs/design/preview.html` is the canonical visual reference for the implementation.
 
 ## Web app (`web/`)
 

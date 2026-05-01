@@ -1,0 +1,1281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Utter — Design Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg-0: #08090C;
+  --bg-1: #0E1117;
+  --bg-2: #161A22;
+  --bg-3: #1F2530;
+  --line-1: #232936;
+  --line-2: #2D3548;
+  --text-0: #ECEEF2;
+  --text-1: #8B92A4;
+  --text-2: #5A6072;
+  --accent: #4F8AF7;
+  --accent-2: #6BA3FF;
+  --accent-tint: rgba(79,138,247,.12);
+  --rec: #FF4D58;
+  --ok: #12B981;
+  --warn: #F5A524;
+  --display: 'Bricolage Grotesque', serif;
+  --sans: 'Geist', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg-0);
+  color: var(--text-0);
+  font-family: var(--sans);
+  font-feature-settings: "ss01", "ss02";
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(79,138,247,.06), transparent 60%),
+    radial-gradient(ellipse at 80% 110%, rgba(79,138,247,.04), transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+  opacity: .7;
+}
+main { position: relative; z-index: 2; max-width: 1380px; margin: 0 auto; padding: 64px 32px 120px; }
+
+/* ---------- Brand header ---------- */
+.brand { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.brand h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 56px;
+  letter-spacing: -0.04em;
+  margin: 0;
+  font-variation-settings: "opsz" 96;
+}
+.brand .dot {
+  width: 8px; height: 8px; border-radius: 999px;
+  background: var(--rec);
+  box-shadow: 0 0 16px var(--rec);
+  animation: pulse 1.4s ease-in-out infinite;
+  align-self: center;
+  margin-bottom: 14px;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(.85); }
+}
+.brand .meta {
+  font-family: var(--mono);
+  color: var(--text-2);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  margin-left: auto;
+}
+.tagline { color: var(--text-1); font-size: 16px; max-width: 60ch; margin: 0 0 64px; }
+
+/* ---------- Section labels ---------- */
+.section { margin-bottom: 96px; }
+.section-label {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-2);
+  margin-bottom: 16px;
+}
+.section-label::before { content: ""; width: 24px; height: 1px; background: var(--line-2); }
+.section h2 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+  font-variation-settings: "opsz" 48;
+}
+.section h2 + p { color: var(--text-1); margin: 0 0 24px; max-width: 60ch; }
+
+/* ---------- Window/frame chrome ---------- */
+.app-window, .web-frame {
+  background: linear-gradient(180deg, var(--bg-1), var(--bg-0));
+  border: 1px solid var(--line-1);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.03) inset,
+    0 40px 80px -40px rgba(0,0,0,.8),
+    0 8px 24px -16px rgba(0,0,0,.6);
+}
+.titlebar, .browser-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line-1);
+  background: rgba(0,0,0,.2);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+}
+.traffic { display: flex; gap: 8px; }
+.traffic span { width: 12px; height: 12px; border-radius: 999px; background: var(--bg-3); }
+.titlebar-name { text-transform: uppercase; letter-spacing: 0.08em; }
+
+.browser-bar .url {
+  flex: 1; background: var(--bg-2);
+  border: 1px solid var(--line-1);
+  border-radius: 6px; padding: 4px 10px;
+  letter-spacing: 0.02em;
+  font-size: 11.5px;
+}
+
+/* ===== 01 — DESKTOP IDLE ===== */
+.desktop-idle { display: grid; grid-template-columns: 1fr 360px; min-height: 520px; }
+.desktop-idle .stage { padding: 56px 56px 40px; display: flex; flex-direction: column; gap: 36px; }
+
+.kicker {
+  font-family: var(--mono);
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.2em;
+  color: var(--text-2);
+}
+.headline {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 44px;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  margin: 0;
+  max-width: 14ch;
+  font-variation-settings: "opsz" 72;
+}
+.headline em { font-style: normal; color: var(--accent); }
+
+.record-cluster { display: flex; align-items: center; gap: 24px; }
+.btn-record {
+  --size: 92px;
+  width: var(--size); height: var(--size);
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #FF6770, #C42730);
+  border: 1px solid rgba(255,77,88,.4);
+  box-shadow:
+    0 0 0 6px rgba(255,77,88,.08),
+    0 18px 36px -12px rgba(255,77,88,.4),
+    inset 0 1px 0 rgba(255,255,255,.2),
+    inset 0 -10px 20px rgba(0,0,0,.3);
+  cursor: pointer; position: relative;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.btn-record::after {
+  content: "";
+  position: absolute; inset: 32%;
+  border-radius: 6px;
+  background: rgba(255,255,255,.94);
+}
+.btn-record:hover {
+  transform: scale(1.03);
+  box-shadow:
+    0 0 0 10px rgba(255,77,88,.1),
+    0 24px 48px -12px rgba(255,77,88,.5),
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -10px 20px rgba(0,0,0,.3);
+}
+.btn-record-info .label {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.015em;
+  margin: 0 0 4px;
+}
+.btn-record-info .hint { color: var(--text-1); font-size: 13px; }
+.btn-record-info .hint kbd {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-1);
+  border-bottom-width: 2px;
+  padding: 1px 6px; border-radius: 4px;
+  color: var(--text-0);
+  margin: 0 2px;
+}
+
+/* Audio source selector */
+.source-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.source-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line-1);
+  border-radius: 8px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+  position: relative;
+}
+.source-card:hover { border-color: var(--line-2); }
+.source-card.active {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, var(--accent-tint), transparent);
+}
+.source-card.active::before {
+  content: "";
+  position: absolute; top: 12px; right: 12px;
+  width: 7px; height: 7px; border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+.source-card .name { font-weight: 600; font-size: 13.5px; margin: 0 0 4px; }
+.source-card .desc { font-size: 11.5px; color: var(--text-1); margin: 0; line-height: 1.4; }
+
+/* Right side panel */
+.aside {
+  border-left: 1px solid var(--line-1);
+  background: rgba(0,0,0,.15);
+  padding: 28px 22px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.aside h3 {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-2);
+  margin: 0 0 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.aside h3 a {
+  font-family: var(--sans);
+  text-transform: none; letter-spacing: 0;
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+}
+.recent-list { display: flex; flex-direction: column; gap: 2px; }
+.recent {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 8px; margin: 0 -8px;
+  border-radius: 6px;
+  text-decoration: none; color: inherit;
+}
+.recent:hover { background: var(--bg-2); }
+.recent .thumb {
+  width: 44px; height: 30px; border-radius: 4px;
+  background: linear-gradient(135deg, #1F2530, #0E1117);
+  flex-shrink: 0; position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line-1);
+}
+.recent .thumb::after {
+  content: "";
+  position: absolute; left: 38%; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 7px solid var(--text-1);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+.recent .info { flex: 1; min-width: 0; }
+.recent .info .ttl {
+  font-size: 13px; margin: 0 0 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.recent .info .sub {
+  font-family: var(--mono);
+  font-size: 10.5px; color: var(--text-2);
+  letter-spacing: 0.04em;
+}
+.recent .badge {
+  font-family: var(--mono); font-size: 9.5px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  padding: 2px 6px; border-radius: 3px;
+  background: var(--bg-3); color: var(--text-1);
+}
+.recent .badge.ready { color: var(--ok); background: rgba(18,185,129,.1); }
+.recent .badge.up { color: var(--warn); background: rgba(245,165,36,.1); }
+
+.connection {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.connection .led {
+  display: inline-block;
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ===== 02 — RECORDING PILL ===== */
+.pill-stage {
+  display: flex; justify-content: center;
+  padding: 80px 0;
+  background: linear-gradient(180deg, var(--bg-1), var(--bg-0));
+  border: 1px solid var(--line-1);
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.pill-stage::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--line-1) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-1) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: -1px -1px;
+  opacity: .25;
+  -webkit-mask-image: radial-gradient(ellipse at center, black, transparent 70%);
+          mask-image: radial-gradient(ellipse at center, black, transparent 70%);
+}
+.pill {
+  position: relative; z-index: 1;
+  background: rgba(14,17,23,.85);
+  -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(20px);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 10px 14px 10px 16px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 24px 48px -16px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.02) inset;
+}
+.rec-dot {
+  width: 8px; height: 8px; border-radius: 999px;
+  background: var(--rec);
+  box-shadow: 0 0 12px var(--rec);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.rec-time {
+  font-family: var(--mono); font-weight: 500;
+  font-size: 14px; letter-spacing: 0.02em;
+  color: var(--text-0);
+  font-variant-numeric: tabular-nums;
+}
+.meter { display: flex; gap: 2px; align-items: end; height: 18px; }
+.meter span { width: 3px; background: var(--text-2); border-radius: 1px; }
+.meter span:nth-child(1) { animation: m1 .6s ease-in-out infinite; }
+.meter span:nth-child(2) { animation: m2 .8s ease-in-out infinite; }
+.meter span:nth-child(3) { animation: m3 .5s ease-in-out infinite; background: var(--accent); }
+.meter span:nth-child(4) { animation: m4 .9s ease-in-out infinite; }
+.meter span:nth-child(5) { animation: m5 .7s ease-in-out infinite; }
+@keyframes m1 { 0%,100% { height: 25% } 50% { height: 70% } }
+@keyframes m2 { 0%,100% { height: 60% } 50% { height: 30% } }
+@keyframes m3 { 0%,100% { height: 80% } 50% { height: 40% } }
+@keyframes m4 { 0%,100% { height: 35% } 50% { height: 75% } }
+@keyframes m5 { 0%,100% { height: 50% } 50% { height: 25% } }
+
+.pill-divider { width: 1px; height: 16px; background: var(--line-2); }
+.pill-source {
+  font-family: var(--mono); font-size: 10.5px; color: var(--text-2);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.pill-btn {
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-family: var(--sans); font-size: 12px; font-weight: 500;
+  color: var(--text-0);
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+}
+.pill-btn:hover { background: var(--line-2); }
+.pill-btn.stop {
+  background: var(--rec);
+  border-color: rgba(255,77,88,.4);
+  color: white;
+}
+.pill-btn.stop:hover { background: #FF6670; }
+
+/* ===== 03 — DASHBOARD ===== */
+.dashboard { padding: 0; display: grid; grid-template-columns: 220px 1fr; min-height: 560px; }
+.sidebar {
+  border-right: 1px solid var(--line-1);
+  padding: 24px 0;
+  background: rgba(0,0,0,.12);
+  display: flex; flex-direction: column;
+}
+.logo { display: flex; align-items: center; gap: 10px; padding: 0 24px 28px; }
+.logo-mark {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 6px;
+  position: relative;
+  display: grid; place-items: center;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.1) inset, 0 4px 12px rgba(79,138,247,.3);
+}
+.logo-mark::before {
+  content: "U";
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  letter-spacing: -0.04em;
+}
+.logo-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+.nav { display: flex; flex-direction: column; }
+.nav a {
+  padding: 8px 24px;
+  text-decoration: none; color: var(--text-1);
+  font-size: 13.5px;
+  border-left: 2px solid transparent;
+}
+.nav a:hover { color: var(--text-0); background: rgba(255,255,255,.02); }
+.nav a.active {
+  color: var(--text-0);
+  border-left-color: var(--accent);
+  background: linear-gradient(90deg, var(--accent-tint), transparent);
+}
+.storage {
+  margin-top: auto;
+  padding: 20px 24px;
+  border-top: 1px solid var(--line-1);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.storage .row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.storage .bar { height: 3px; background: var(--bg-2); border-radius: 2px; overflow: hidden; }
+.storage .bar > span { display: block; height: 100%; background: var(--accent); width: 5%; }
+
+.dashboard .main { padding: 32px 40px; }
+.toolbar { display: flex; align-items: end; justify-content: space-between; margin-bottom: 28px; }
+.toolbar h1 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: -0.025em;
+  margin: 0 0 4px;
+}
+.toolbar p {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text-2); letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.search {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: 6px;
+  padding: 6px 10px;
+  display: flex; align-items: center; gap: 8px;
+  width: 280px;
+}
+.search input {
+  background: transparent; border: 0; outline: 0;
+  color: var(--text-0); font-family: var(--sans);
+  font-size: 13px; flex: 1;
+}
+.search input::placeholder { color: var(--text-2); }
+.search kbd {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-2);
+  background: var(--bg-2); border: 1px solid var(--line-1);
+  padding: 1px 5px; border-radius: 3px;
+}
+
+.table {
+  border: 1px solid var(--line-1);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-1);
+}
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 130px 200px 60px;
+  gap: 24px;
+  padding: 16px 20px;
+  align-items: center;
+  border-bottom: 1px solid var(--line-1);
+  text-decoration: none; color: inherit;
+  transition: background .12s ease;
+}
+.table-row:last-child { border-bottom: 0; }
+.table-row.head {
+  font-family: var(--mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.16em;
+  color: var(--text-2);
+  background: rgba(0,0,0,.18);
+  padding: 12px 20px;
+}
+.table-row:not(.head):hover { background: var(--bg-2); }
+.row-title { display: flex; align-items: center; gap: 12px; }
+.row-title .thumb {
+  width: 44px; height: 28px; border-radius: 4px;
+  background: linear-gradient(135deg, #1F2530, #0E1117);
+  border: 1px solid var(--line-1);
+  position: relative; flex-shrink: 0;
+}
+.row-title .thumb::after {
+  content: "";
+  position: absolute; left: 38%; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 6px solid var(--text-1);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+.row-title .ttl { font-size: 14px; font-weight: 500; }
+.row-title .sub {
+  font-family: var(--mono); font-size: 10.5px;
+  color: var(--text-2); letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+.col-mono {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  padding: 3px 8px; border-radius: 999px;
+  border: 1px solid var(--line-2);
+  color: var(--text-1);
+}
+.tag.ready { color: var(--ok); border-color: rgba(18,185,129,.3); background: rgba(18,185,129,.06); }
+.tag.up { color: var(--warn); border-color: rgba(245,165,36,.3); background: rgba(245,165,36,.06); }
+.tag.tx { color: var(--accent); border-color: rgba(79,138,247,.3); background: rgba(79,138,247,.06); }
+.tag .led { width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+.tag.up .led, .tag.tx .led { animation: blink 1.4s ease-in-out infinite; }
+@keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: .25 } }
+
+.col-share { font-family: var(--mono); font-size: 11.5px; color: var(--text-2); letter-spacing: 0.02em; }
+.col-share.live { color: var(--accent); }
+
+/* ===== 04 — DETAIL ===== */
+.detail { display: grid; grid-template-columns: 1fr 380px; min-height: 720px; }
+.detail .left {
+  padding: 28px 32px 36px;
+  border-right: 1px solid var(--line-1);
+  display: flex; flex-direction: column; gap: 22px;
+}
+.crumbs {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 10.5px;
+  color: var(--text-2); letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.crumbs a { color: var(--text-1); text-decoration: none; }
+.crumbs a:hover { color: var(--text-0); }
+
+.detail-title h1 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 30px;
+  letter-spacing: -0.022em;
+  margin: 0 0 8px;
+}
+.detail-title .meta {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 10.5px;
+  color: var(--text-2); letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.detail-title .meta .dot { color: var(--line-2); }
+.detail-title .meta .shared { color: var(--accent); }
+
+.video {
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #1F2530, #0E1117);
+  border: 1px solid var(--line-1);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.video::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.video .play { position: absolute; inset: 0; display: grid; place-items: center; }
+.video .play span {
+  width: 64px; height: 64px; border-radius: 999px;
+  background: rgba(8,9,12,.6);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.08);
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.video .play span:hover { transform: scale(1.05); background: rgba(8,9,12,.8); }
+.video .play span::after {
+  content: "";
+  width: 0; height: 0;
+  border-left: 16px solid white;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  margin-left: 4px;
+}
+.video .scrubber {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,.7));
+  padding: 60px 16px 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.video .progress {
+  height: 3px; border-radius: 2px;
+  background: rgba(255,255,255,.12);
+  position: relative;
+}
+.video .progress::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 38%; background: var(--accent);
+  border-radius: 2px;
+}
+.video .progress::after {
+  content: ""; position: absolute; left: 38%; top: 50%;
+  width: 12px; height: 12px;
+  background: white; border-radius: 999px;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(79,138,247,.7);
+}
+.video .timecodes {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 11px;
+  color: rgba(255,255,255,.7);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Transcript */
+.transcript {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: 10px;
+  display: flex; flex-direction: column;
+  height: 320px; overflow: hidden;
+}
+.transcript-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line-1);
+  font-family: var(--mono); font-size: 10.5px;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--text-2);
+}
+.transcript-head .actions { display: flex; gap: 8px; }
+.transcript-head button {
+  background: transparent; border: 0; cursor: pointer;
+  color: var(--text-2); font-family: var(--mono); font-size: 10.5px;
+  text-transform: uppercase; letter-spacing: 0.12em;
+}
+.transcript-head button:hover { color: var(--text-0); }
+.transcript-body {
+  overflow-y: auto;
+  padding: 8px 0;
+  flex: 1;
+}
+.transcript-body::-webkit-scrollbar { width: 6px; }
+.transcript-body::-webkit-scrollbar-track { background: transparent; }
+.transcript-body::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 999px; }
+
+.seg {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 16px;
+  padding: 8px 16px;
+  cursor: pointer;
+  position: relative;
+  border-left: 2px solid transparent;
+  transition: background .1s ease;
+}
+.seg:hover { background: rgba(255,255,255,.02); }
+.seg.active {
+  background: linear-gradient(90deg, var(--accent-tint), transparent 70%);
+  border-left-color: var(--accent);
+}
+.seg .ts {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text-2); letter-spacing: 0.04em;
+  padding-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.seg.active .ts { color: var(--accent); }
+.seg .text {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-0);
+}
+.seg.muted .text { color: var(--text-1); }
+
+/* Right pane: Claude */
+.claude {
+  display: flex; flex-direction: column;
+  background: rgba(0,0,0,.16);
+}
+.claude-head {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line-1);
+  display: flex; align-items: center; gap: 10px;
+}
+.claude-head .star {
+  width: 22px; height: 22px;
+  background: linear-gradient(135deg, #DD7A4A, #B85432);
+  border-radius: 5px;
+  display: grid; place-items: center;
+  font-family: var(--display); font-weight: 700;
+  font-size: 13px; color: white;
+}
+.claude-head h3 {
+  font-family: var(--display);
+  font-size: 16px; font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+.claude-head .sub {
+  font-family: var(--mono); font-size: 9.5px;
+  color: var(--text-2); letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+.claude-body {
+  flex: 1; overflow-y: auto;
+  padding: 22px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.claude-body::-webkit-scrollbar { width: 6px; }
+.claude-body::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 999px; }
+
+.bubble.user {
+  align-self: flex-end;
+  max-width: 85%;
+  background: var(--accent-tint);
+  border: 1px solid rgba(79,138,247,.2);
+  padding: 9px 12px; border-radius: 10px 10px 2px 10px;
+  font-size: 13.5px;
+  color: var(--text-0);
+}
+.bubble.assistant { font-size: 13.5px; line-height: 1.6; }
+.bubble.assistant strong { font-weight: 600; }
+.bubble.assistant p { margin: 0 0 10px; }
+.bubble.assistant p:last-child { margin-bottom: 0; }
+
+.cite {
+  display: inline-flex; align-items: center;
+  font-family: var(--mono); font-size: 10.5px;
+  font-weight: 500; letter-spacing: 0.02em;
+  color: var(--accent);
+  background: var(--accent-tint);
+  border: 1px solid rgba(79,138,247,.25);
+  padding: 1px 6px; border-radius: 4px;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: background .12s ease;
+  margin: 0 1px;
+}
+.cite:hover { background: rgba(79,138,247,.22); }
+
+.composer {
+  border-top: 1px solid var(--line-1);
+  padding: 14px 18px 16px;
+  background: rgba(0,0,0,.2);
+}
+.composer-input {
+  background: var(--bg-2);
+  border: 1px solid var(--line-1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex; align-items: end; gap: 10px;
+  transition: border-color .15s ease;
+}
+.composer-input:focus-within { border-color: var(--line-2); }
+.composer textarea {
+  background: transparent; border: 0; outline: 0; resize: none;
+  flex: 1; color: var(--text-0); font-family: var(--sans);
+  font-size: 13.5px; line-height: 1.5; padding: 0;
+  min-height: 22px;
+}
+.composer textarea::placeholder { color: var(--text-2); }
+.send {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border: 0; border-radius: 6px;
+  cursor: pointer;
+  display: grid; place-items: center;
+  transition: background .12s ease;
+}
+.send:hover { background: var(--accent-2); }
+.send::after {
+  content: "";
+  width: 0; height: 0;
+  border-left: 8px solid white;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  margin-left: 2px;
+}
+.composer-footer {
+  display: flex; justify-content: space-between;
+  margin-top: 8px;
+  font-family: var(--mono); font-size: 9.5px;
+  color: var(--text-2); letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.composer-footer kbd {
+  background: var(--bg-2); border: 1px solid var(--line-1);
+  padding: 1px 5px; border-radius: 3px; color: var(--text-1);
+  font-family: var(--mono); font-size: 9.5px;
+}
+
+/* ===== 05 — TOKENS ===== */
+.tokens {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  margin-top: 24px;
+}
+.swatch {
+  border: 1px solid var(--line-1);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--bg-1);
+}
+.swatch-color { height: 56px; border-radius: 4px; border: 1px solid rgba(255,255,255,.04); }
+.swatch-meta {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-1); letter-spacing: 0.04em;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.swatch-meta .name {
+  color: var(--text-0); text-transform: uppercase; letter-spacing: 0.1em;
+  font-size: 9.5px;
+}
+.type-ramp {
+  display: flex; flex-direction: column; gap: 0;
+  margin-top: 24px;
+  padding: 12px 28px;
+  border: 1px solid var(--line-1);
+  border-radius: 10px;
+  background: var(--bg-1);
+}
+.type-ramp .row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: baseline;
+  padding: 18px 0;
+  border-bottom: 1px dashed var(--line-1);
+}
+.type-ramp .row:last-child { border: 0; }
+.type-ramp .label {
+  font-family: var(--mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--text-2);
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand">
+      <h1>Utter.</h1>
+      <span class="dot"></span>
+      <span class="meta">DESIGN PREVIEW · 2026-05-01</span>
+    </div>
+    <p class="tagline">A meeting recorder for one. Capture the window, stream to R2 as it runs, transcribe with Groq, then ask Claude what was said.</p>
+  </header>
+
+  <!-- 01 DESKTOP IDLE -->
+  <section class="section">
+    <div class="section-label">01 — Desktop · Ready</div>
+    <h2>Idle state</h2>
+    <p>One button. One decision. Everything else is automatic.</p>
+
+    <div class="app-window">
+      <div class="titlebar">
+        <div class="traffic"><span></span><span></span><span></span></div>
+        <span class="titlebar-name">UTTER · Desktop</span>
+      </div>
+      <div class="desktop-idle">
+        <div class="stage">
+          <span class="kicker">READY</span>
+          <h2 class="headline">Press record. <em>Pick a window.</em> The rest is automatic.</h2>
+
+          <div class="record-cluster">
+            <button class="btn-record" aria-label="Start recording"></button>
+            <div class="btn-record-info">
+              <div class="label">Start recording</div>
+              <div class="hint">Or press <kbd>⌘</kbd><kbd>⇧</kbd><kbd>R</kbd> from anywhere</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="kicker" style="margin-bottom: 10px;">AUDIO SOURCE</div>
+            <div class="source-grid">
+              <div class="source-card">
+                <p class="name">Mic only</p>
+                <p class="desc">Your voice from the system mic.</p>
+              </div>
+              <div class="source-card active">
+                <p class="name">Mic + System</p>
+                <p class="desc">You and the meeting. Needs BlackHole on macOS.</p>
+              </div>
+              <div class="source-card">
+                <p class="name">System only</p>
+                <p class="desc">Just the meeting audio.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="aside">
+          <div>
+            <h3>Recent <a href="#">All →</a></h3>
+            <div class="recent-list">
+              <a class="recent" href="#">
+                <div class="thumb"></div>
+                <div class="info"><p class="ttl">Sync with design</p><p class="sub">23m · 2H AGO</p></div>
+                <span class="badge ready">●&nbsp;READY</span>
+              </a>
+              <a class="recent" href="#">
+                <div class="thumb"></div>
+                <div class="info"><p class="ttl">Founders standup</p><p class="sub">11m · YESTERDAY</p></div>
+                <span class="badge ready">●&nbsp;READY</span>
+              </a>
+              <a class="recent" href="#">
+                <div class="thumb"></div>
+                <div class="info"><p class="ttl">Investor call · Felicis</p><p class="sub">42m · APR 28</p></div>
+                <span class="badge ready">●&nbsp;READY</span>
+              </a>
+              <a class="recent" href="#">
+                <div class="thumb"></div>
+                <div class="info"><p class="ttl">Recording — Apr 26, 14:02</p><p class="sub">8m · APR 26</p></div>
+                <span class="badge up">●&nbsp;UPLOAD</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="connection">
+            <span><span class="led"></span>R2 ONLINE</span>
+            <span>38ms</span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 RECORDING PILL -->
+  <section class="section">
+    <div class="section-label">02 — Desktop · Recording</div>
+    <h2>The minimal floating control</h2>
+    <p>While recording, the app collapses to a frosted pill that floats over your meeting. Elapsed time in mono, live level meter, one-click stop.</p>
+
+    <div class="pill-stage">
+      <div class="pill">
+        <span class="rec-dot"></span>
+        <span class="rec-time">00:14:32</span>
+        <div class="meter"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="pill-divider"></div>
+        <span class="pill-source">Zoom · Meeting</span>
+        <button class="pill-btn">Pause</button>
+        <button class="pill-btn stop">■&nbsp;Stop</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 WEB DASHBOARD -->
+  <section class="section">
+    <div class="section-label">03 — Web · Dashboard</div>
+    <h2>All your recordings in one quiet table</h2>
+    <p>Sortable, searchable. Status as a tiny LED. Share links revealed inline.</p>
+
+    <div class="web-frame">
+      <div class="browser-bar">
+        <div class="traffic"><span></span><span></span><span></span></div>
+        <div class="url">utter.local · /</div>
+        <span><span style="color:var(--ok);">●</span> Connected</span>
+      </div>
+      <div class="dashboard">
+        <aside class="sidebar">
+          <div class="logo">
+            <div class="logo-mark"></div>
+            <div class="logo-name">Utter</div>
+          </div>
+          <nav class="nav">
+            <a href="#" class="active">Recordings</a>
+            <a href="#">Shared</a>
+            <a href="#">Settings</a>
+          </nav>
+          <div class="storage">
+            <div class="row"><span>Storage</span><span>2.3 / 50 GB</span></div>
+            <div class="bar"><span></span></div>
+          </div>
+        </aside>
+
+        <div class="main">
+          <div class="toolbar">
+            <div>
+              <p>04 RECORDINGS · 1H 24M TOTAL</p>
+              <h1>Recordings</h1>
+            </div>
+            <div class="search">
+              <span style="color:var(--text-2);">⌕</span>
+              <input placeholder="Search transcripts and titles…" />
+              <kbd>⌘ K</kbd>
+            </div>
+          </div>
+
+          <div class="table">
+            <div class="table-row head">
+              <div>Recording</div>
+              <div>Length</div>
+              <div>Status</div>
+              <div>Share</div>
+              <div></div>
+            </div>
+
+            <a class="table-row" href="#">
+              <div class="row-title">
+                <div class="thumb"></div>
+                <div>
+                  <div class="ttl">Sync with design</div>
+                  <div class="sub">MAY 1 · 09:32</div>
+                </div>
+              </div>
+              <div class="col-mono">23:14</div>
+              <div><span class="tag ready"><span class="led"></span>Ready</span></div>
+              <div class="col-share live">utter.app/s/k3p2x9d8</div>
+              <div class="col-mono" style="text-align:right;">→</div>
+            </a>
+
+            <a class="table-row" href="#">
+              <div class="row-title">
+                <div class="thumb"></div>
+                <div>
+                  <div class="ttl">Founders standup</div>
+                  <div class="sub">APR 30 · 10:00</div>
+                </div>
+              </div>
+              <div class="col-mono">11:08</div>
+              <div><span class="tag ready"><span class="led"></span>Ready</span></div>
+              <div class="col-share">—</div>
+              <div class="col-mono" style="text-align:right;">→</div>
+            </a>
+
+            <a class="table-row" href="#">
+              <div class="row-title">
+                <div class="thumb"></div>
+                <div>
+                  <div class="ttl">Investor call · Felicis</div>
+                  <div class="sub">APR 28 · 16:45</div>
+                </div>
+              </div>
+              <div class="col-mono">42:01</div>
+              <div><span class="tag tx"><span class="led"></span>Transcribing</span></div>
+              <div class="col-share">—</div>
+              <div class="col-mono" style="text-align:right;">→</div>
+            </a>
+
+            <a class="table-row" href="#">
+              <div class="row-title">
+                <div class="thumb"></div>
+                <div>
+                  <div class="ttl">Recording — Apr 26, 14:02</div>
+                  <div class="sub">APR 26 · 14:02</div>
+                </div>
+              </div>
+              <div class="col-mono">08:41</div>
+              <div><span class="tag up"><span class="led"></span>Upload 64%</span></div>
+              <div class="col-share">—</div>
+              <div class="col-mono" style="text-align:right;">→</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 RECORDING DETAIL -->
+  <section class="section">
+    <div class="section-label">04 — Web · Recording detail (admin)</div>
+    <h2>Watch, read, ask</h2>
+    <p>Video on the left, transcript synced to playback, Claude on the right with clickable timestamp citations.</p>
+
+    <div class="web-frame">
+      <div class="browser-bar">
+        <div class="traffic"><span></span><span></span><span></span></div>
+        <div class="url">utter.local · /r/k3p2x9d8</div>
+        <span><span style="color:var(--accent);">●</span> Admin</span>
+      </div>
+      <div class="detail">
+        <div class="left">
+          <div class="crumbs"><a href="#">RECORDINGS</a> / SYNC WITH DESIGN</div>
+          <div class="detail-title">
+            <h1>Sync with design</h1>
+            <div class="meta">
+              <span>MAY 1 · 09:32</span>
+              <span class="dot">·</span>
+              <span>23:14 DURATION</span>
+              <span class="dot">·</span>
+              <span>WHISPER-LARGE-V3</span>
+              <span class="dot">·</span>
+              <span class="shared">SHARED</span>
+            </div>
+          </div>
+
+          <div class="video">
+            <div class="play"><span></span></div>
+            <div class="scrubber">
+              <div class="progress"></div>
+              <div class="timecodes"><span>08:48</span><span>23:14</span></div>
+            </div>
+          </div>
+
+          <div class="transcript">
+            <div class="transcript-head">
+              <span>Transcript · 142 segments</span>
+              <div class="actions">
+                <button>Download .vtt</button>
+              </div>
+            </div>
+            <div class="transcript-body">
+              <div class="seg muted">
+                <div class="ts">00:08:32</div>
+                <div class="text">…and the brand was leaning a bit too consumer. We want it to feel more like a tool than a product.</div>
+              </div>
+              <div class="seg muted">
+                <div class="ts">00:08:41</div>
+                <div class="text">Right. Editorial, but precise. Not playful.</div>
+              </div>
+              <div class="seg active">
+                <div class="ts">00:08:48</div>
+                <div class="text">Here's the thing — the recording state should feel like a hardware meter. Levels, blinking light, mono numbers. People know what that means.</div>
+              </div>
+              <div class="seg">
+                <div class="ts">00:09:02</div>
+                <div class="text">Let's pick Bricolage for display and Geist for everything else. Mono for timestamps and any technical readout.</div>
+              </div>
+              <div class="seg">
+                <div class="ts">00:09:14</div>
+                <div class="text">Agreed. Single accent — a calmer blue than what's in the spec, something cooler.</div>
+              </div>
+              <div class="seg">
+                <div class="ts">00:09:23</div>
+                <div class="text">And we should not center every layout. Asymmetry where it earns it.</div>
+              </div>
+              <div class="seg">
+                <div class="ts">00:09:31</div>
+                <div class="text">One more thing: the transcript should feel like a script. Clean ledger of what was said.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="claude">
+          <div class="claude-head">
+            <div class="star">C</div>
+            <h3>Ask Claude</h3>
+            <span class="sub">opus 4.7</span>
+          </div>
+          <div class="claude-body">
+            <div class="bubble user">What did we decide about the typography?</div>
+            <div class="bubble assistant">
+              <p>You picked <strong>Bricolage Grotesque</strong> for display and <strong>Geist Sans</strong> for body, with mono reserved for timestamps and technical readouts <span class="cite">[09:02]</span>.</p>
+              <p>The reasoning was that the recording state should feel like a hardware meter — mono numbers, blinking light, levels — because people already know what that means <span class="cite">[08:48]</span>. The brand was reading too "consumer" before; the new direction is editorial and precise but not playful <span class="cite">[08:32]</span>.</p>
+            </div>
+            <div class="bubble user">Anything about layout?</div>
+            <div class="bubble assistant">
+              <p>Yes — don't center every layout. Use asymmetry where it earns it <span class="cite">[09:23]</span>. And the transcript should feel like a script: a clean ledger of what was said <span class="cite">[09:31]</span>.</p>
+            </div>
+          </div>
+          <div class="composer">
+            <div class="composer-input">
+              <textarea rows="1" placeholder="Ask anything about this recording…"></textarea>
+              <button class="send" aria-label="Send"></button>
+            </div>
+            <div class="composer-footer">
+              <span>↩ TO SEND · ⇧↩ NEW LINE</span>
+              <span>CTX 12.4K / 200K</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 TOKENS -->
+  <section class="section">
+    <div class="section-label">05 — Tokens</div>
+    <h2>Color · Type · Motion</h2>
+    <p>The whole system on one page.</p>
+
+    <div class="tokens">
+      <div class="swatch"><div class="swatch-color" style="background:#08090C"></div><div class="swatch-meta"><span class="name">BG / 0</span><span>#08090C</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#0E1117"></div><div class="swatch-meta"><span class="name">BG / 1</span><span>#0E1117</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#161A22"></div><div class="swatch-meta"><span class="name">BG / 2</span><span>#161A22</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#1F2530"></div><div class="swatch-meta"><span class="name">BG / 3</span><span>#1F2530</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#232936"></div><div class="swatch-meta"><span class="name">LINE / 1</span><span>#232936</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#4F8AF7"></div><div class="swatch-meta"><span class="name">ACCENT</span><span>#4F8AF7</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#FF4D58"></div><div class="swatch-meta"><span class="name">REC</span><span>#FF4D58</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#12B981"></div><div class="swatch-meta"><span class="name">OK</span><span>#12B981</span></div></div>
+    </div>
+
+    <div class="type-ramp">
+      <div class="row">
+        <div class="label">DISPLAY · 56/96 · BRICOLAGE</div>
+        <div style="font-family: var(--display); font-weight: 700; font-size: 56px; letter-spacing: -0.04em; line-height: 1; font-variation-settings: 'opsz' 96;">Quiet by design.</div>
+      </div>
+      <div class="row">
+        <div class="label">HEADLINE · 32/72 · BRICOLAGE</div>
+        <div style="font-family: var(--display); font-weight: 600; font-size: 32px; letter-spacing: -0.025em; font-variation-settings: 'opsz' 48;">A meeting recorder for one.</div>
+      </div>
+      <div class="row">
+        <div class="label">BODY · 14 · GEIST</div>
+        <div style="font-family: var(--sans); font-size: 14px; max-width: 60ch;">Geist Sans is the workhorse — clean modern grotesk that reads beautifully at small sizes and never gets in the way of what you're reading.</div>
+      </div>
+      <div class="row">
+        <div class="label">MONO · 12 · GEIST MONO</div>
+        <div style="font-family: var(--mono); font-size: 12px; letter-spacing: 0.02em;">00:08:48 · WHISPER-LARGE-V3 · 4F8AF7 · ⌘⇧R</div>
+      </div>
+      <div class="row">
+        <div class="label">LABEL · 11/MONO/UPPER</div>
+        <div style="font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--text-2);">SECTION LABEL · UPPERCASE TRACKED</div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--line-1); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10.5px; color: var(--text-2); letter-spacing: 0.08em; text-transform: uppercase;">
+    <span>UTTER · DESIGN PREVIEW</span>
+    <span>2026-05-01 · v0.1</span>
+  </footer>
+</main>
+</body>
+</html>
