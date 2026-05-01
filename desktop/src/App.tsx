@@ -1,13 +1,15 @@
+import { useState } from "react";
 import { useSession } from "@/store/session";
 import { Login } from "@/screens/Login";
+import { Idle } from "@/screens/Idle";
+import { RecorderShell } from "@/screens/RecorderShell";
+import type { AudioMode } from "@/recording/capture";
 
 export function App() {
   const token = useSession((s) => s.token);
+  const [recording, setRecording] = useState<AudioMode | null>(null);
+
   if (!token) return <Login />;
-  return (
-    <main className="p-12">
-      <h1 className="font-display text-5xl tracking-tightest font-bold">Logged in.</h1>
-      <p className="text-text-1 mt-2">Idle screen comes next.</p>
-    </main>
-  );
+  if (recording) return <RecorderShell mode={recording} onDone={() => setRecording(null)} />;
+  return <Idle onStart={(m) => setRecording(m)} />;
 }
