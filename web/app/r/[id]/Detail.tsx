@@ -5,6 +5,7 @@ import type { Recording } from "@utter/shared";
 import { TranscriptList } from "@/components/TranscriptList";
 import { VideoPlayer, type VideoPlayerHandle } from "@/components/VideoPlayer";
 import { formatDate, formatDuration } from "@/lib/format";
+import { ShareControl } from "@/components/ShareControl";
 
 export function Detail({ recording, videoUrl }: { recording: Recording; videoUrl: string }) {
   const playerRef = useRef<VideoPlayerHandle | null>(null);
@@ -33,6 +34,11 @@ export function Detail({ recording, videoUrl }: { recording: Recording; videoUrl
             </>)}
           </div>
         </header>
+        <ShareControl
+          recordingId={recording.id}
+          initialToken={recording.shareToken}
+          baseUrl={typeof window === "undefined" ? "" : window.location.origin}
+        />
         <VideoPlayer ref={playerRef} src={videoUrl} onTimeUpdate={setT} />
         <TranscriptList segments={segs} currentTime={t} onSeek={(s) => playerRef.current?.seekTo(s)} />
       </div>
