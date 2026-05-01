@@ -52,4 +52,24 @@ Visit http://localhost:3000.
 
 ## Run the desktop app
 
-See `docs/superpowers/plans/2026-05-01-utter-desktop.md` (next plan).
+1. Copy `desktop/.env.example` → `desktop/.env` and fill in the values. The same `ADMIN_USERNAME` / `ADMIN_PASSWORD` and the same `MONGODB_URI` + `R2_*` you set for the web app.
+2. Add a `GROQ_API_KEY` (https://console.groq.com).
+3. Install Rust if you don't have it: https://rustup.rs (Tauri requires it).
+4. macOS only: install BlackHole if you want to record system audio. https://github.com/ExistentialAudio/BlackHole — set it as your output device, then choose **Mic + System** or **System only** in the recorder.
+5. Start the app:
+
+   ```bash
+   pnpm install
+   pnpm --filter @utter/desktop tauri dev
+   ```
+
+6. Sign in with the admin credentials. Press the red button or hit `⌘⇧R` (Cmd+Shift+R) anywhere.
+7. Pick a window in the OS picker. Recordings appear in the web app under `/`.
+
+### Build a distributable
+
+```bash
+pnpm --filter @utter/desktop tauri build
+```
+
+Outputs to `desktop/src-tauri/target/release/bundle/`.
