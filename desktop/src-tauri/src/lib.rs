@@ -3,6 +3,8 @@ use std::sync::Mutex;
 mod env;
 mod errors;
 mod state;
+mod mongo;
+mod groq;
 
 use crate::state::AppState;
 
