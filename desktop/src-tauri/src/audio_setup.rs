@@ -12,10 +12,17 @@ pub struct BlackHoleStatus {
 #[cfg(target_os = "macos")]
 const DRIVER_PATH: &str = "/Library/Audio/Plug-Ins/HAL/BlackHole2ch.driver";
 
-// Pin to a known good release. Update by bumping this constant.
+// Pin to a known good release. The maintainer hosts pkgs on existential.audio (no
+// auth required); GitHub releases for BlackHole don't carry .pkg assets.
+// To bump: update both fields. Find the next version + sha at
+// https://github.com/Homebrew/homebrew-cask/blob/master/Casks/b/blackhole-2ch.rb
 #[cfg(target_os = "macos")]
 const BLACKHOLE_PKG_URL: &str =
-    "https://github.com/ExistentialAudio/BlackHole/releases/download/v0.6.0/BlackHole2ch-v0.6.0.pkg";
+    "https://existential.audio/downloads/BlackHole2ch-0.6.1.pkg";
+
+#[cfg(target_os = "macos")]
+const BLACKHOLE_PKG_SHA256: &str =
+    "c829afa041a9f6e1b369c01953c8f079740dd1f02421109855829edc0d3c1988";
 
 pub fn check_status() -> BlackHoleStatus {
     #[cfg(target_os = "macos")]
@@ -46,6 +53,15 @@ pub async fn install() -> AppResult<()> {
         )));
     }
     let bytes = resp.bytes().await?;
+
+    // Verify integrity against the same SHA the Homebrew cask uses.
+    let actual = sha256_hex(&bytes);
+    if actual != BLACKHOLE_PKG_SHA256 {
+        return Err(AppError::Other(format!(
+            "Downloaded BlackHole installer has unexpected hash. Expected {}, got {}. Refusing to install.",
+            BLACKHOLE_PKG_SHA256, actual
+        )));
+    }
 
     let tmp = std::env::temp_dir().join("BlackHole2ch.pkg");
     {
@@ -89,4 +105,16 @@ pub async fn install() -> AppResult<()> {
 #[cfg(not(target_os = "macos"))]
 pub async fn install() -> AppResult<()> {
     Err(AppError::Other("BlackHole is only needed on macOS".to_string()))
+}
+
+#[cfg(target_os = "macos")]
+fn sha256_hex(bytes: &[u8]) -> String {
+    use sha2::{Digest, Sha256};
+    let digest = Sha256::digest(bytes);
+    let mut out = String::with_capacity(64);
+    for b in digest.iter() {
+        use std::fmt::Write;
+        let _ = write!(out, "{:02x}", b);
+    }
+    out
 }
