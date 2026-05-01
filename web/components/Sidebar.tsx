@@ -15,7 +15,10 @@ export function Sidebar({ active }: { active: "recordings" | "shared" | "setting
       </nav>
       <div className="mt-auto px-6 py-5 border-t border-line-1 font-mono text-[10px] uppercase tracking-wider text-text-2">
         <div className="flex justify-between mb-1.5">
-          <span>R2</span><span className="text-ok">● Online</span>
+          <span>Storage</span><span>2.3 / 50 GB</span>
+        </div>
+        <div className="h-[3px] bg-bg-2 rounded-sm overflow-hidden">
+          <div className="h-full bg-accent" style={{ width: "5%" }} />
         </div>
       </div>
     </aside>

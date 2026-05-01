@@ -19,6 +19,14 @@ export default async function DashboardPage() {
             </p>
             <h1 className="font-display text-3xl font-semibold tracking-tighter">Recordings</h1>
           </div>
+          <label className="flex items-center gap-2 bg-bg-1 border border-line-1 rounded px-2.5 py-1.5 w-[280px]">
+            <span className="text-text-2">⌕</span>
+            <input
+              placeholder="Search transcripts and titles…"
+              className="bg-transparent outline-none text-[13px] flex-1 placeholder:text-text-2"
+            />
+            <kbd className="font-mono text-[10px] text-text-2 bg-bg-2 border border-line-1 px-1.5 py-px rounded-sm">⌘ K</kbd>
+          </label>
         </header>
         <RecordingsTable recordings={recordings} />
       </main>
