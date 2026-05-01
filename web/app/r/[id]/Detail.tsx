@@ -6,6 +6,7 @@ import { TranscriptList } from "@/components/TranscriptList";
 import { VideoPlayer, type VideoPlayerHandle } from "@/components/VideoPlayer";
 import { formatDate, formatDuration } from "@/lib/format";
 import { ShareControl } from "@/components/ShareControl";
+import { ChatPanel } from "@/components/ChatPanel";
 
 export function Detail({ recording, videoUrl }: { recording: Recording; videoUrl: string }) {
   const playerRef = useRef<VideoPlayerHandle | null>(null);
@@ -42,14 +43,11 @@ export function Detail({ recording, videoUrl }: { recording: Recording; videoUrl
         <VideoPlayer ref={playerRef} src={videoUrl} onTimeUpdate={setT} />
         <TranscriptList segments={segs} currentTime={t} onSeek={(s) => playerRef.current?.seekTo(s)} />
       </div>
-      <aside
-        data-chat-panel-placeholder
-        className="flex flex-col bg-black/[0.16] min-h-screen border-l border-line-1 p-6"
-      >
-        <h3 className="font-display font-semibold text-base tracking-tight mb-2">Ask Claude</h3>
-        <p className="text-text-2 text-sm">Chat panel comes online once the streaming endpoint and UI are wired (Tasks 17–19).</p>
-        <p className="text-text-2 text-xs mt-auto font-mono uppercase tracking-wider">Recording id · {recording.id}</p>
-      </aside>
+      <ChatPanel
+        recordingId={recording.id}
+        initialChats={recording.chats}
+        onCitationClick={(s) => playerRef.current?.seekTo(s)}
+      />
     </div>
   );
 }
