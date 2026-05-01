@@ -31,8 +31,17 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen grid place-items-center px-6">
-      <form onSubmit={submit} className="w-full max-w-sm bg-bg-1 border border-line-1 rounded-lg p-8 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.8)]">
+    <main className="min-h-screen grid place-items-center px-6 relative overflow-hidden">
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-25 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"
+        style={{
+          backgroundImage:
+            "linear-gradient(#232936 1px, transparent 1px), linear-gradient(90deg, #232936 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+        }}
+      />
+      <form onSubmit={submit} className="relative z-10 w-full max-w-sm bg-bg-1 border border-line-1 rounded-lg p-8 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.8)]">
         <div className="flex items-center gap-2.5 mb-7">
           <Logo />
           <span className="font-display font-semibold text-lg tracking-tighter">Utter</span>
