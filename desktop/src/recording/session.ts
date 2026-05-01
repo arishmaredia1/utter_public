@@ -25,6 +25,13 @@ interface StartArgs {
   secrets: Secrets;
   audioMode: AudioMode;
   onUpdate(s: SessionSnapshot): void;
+  /**
+   * Optional pre-acquired capture bundle. If provided, the session won't call
+   * startCapture() itself. This is required on macOS WKWebView, which only
+   * allows getDisplayMedia() inside a user-gesture handler — the click handler
+   * in Idle.tsx must do the capture before navigating.
+   */
+  capture?: CaptureBundle;
 }
 
 export class RecorderSession {
@@ -44,12 +51,12 @@ export class RecorderSession {
   private r2Key = "";
   private mimeType = "video/webm";
 
-  async start({ secrets, audioMode, onUpdate }: StartArgs): Promise<SessionResult> {
+  async start({ secrets, audioMode, onUpdate, capture }: StartArgs): Promise<SessionResult> {
     if (this.state !== "idle") throw new Error("Already running");
     this.setState("starting", onUpdate);
 
     try {
-      this.capture = await startCapture({ mode: audioMode });
+      this.capture = capture ?? (await startCapture({ mode: audioMode }));
       this.label = this.capture.sourceLabel;
 
       // Pick the best codec the host actually supports. Chromium-based hosts

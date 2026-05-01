@@ -5,12 +5,31 @@ import { RecentList } from "@/components/RecentList";
 import { Kbd } from "@/components/Kbd";
 import type { AudioMode } from "@/recording/capture";
 
-interface Props { onStart(mode: AudioMode): void }
+interface Props {
+  onStart(mode: AudioMode): Promise<void>;
+  startError?: string | null;
+}
 
 const isMac = typeof navigator !== "undefined" && /Mac/i.test(navigator.platform);
 
-export function Idle({ onStart }: Props) {
+export function Idle({ onStart, startError }: Props) {
   const [mode, setMode] = useState<AudioMode>("both");
+  const [busy, setBusy] = useState(false);
+
+  async function handleClick() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      // IMPORTANT: this calls getDisplayMedia synchronously inside the click event.
+      // The first await preserves user activation in WKWebView/Safari, so do not
+      // wrap this with extra setTimeout / requestAnimationFrame / etc.
+      await onStart(mode);
+    } catch {
+      // App.tsx already wrote the error to its `startError` state.
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -23,9 +42,10 @@ export function Idle({ onStart }: Props) {
           </h1>
           <div className="flex items-center gap-6">
             <button
-              onClick={() => onStart(mode)}
+              onClick={handleClick}
+              disabled={busy}
               aria-label="Start recording"
-              className="w-24 h-24 rounded-full relative cursor-pointer border border-rec/40 transition-transform hover:scale-[1.03] focus:outline-none"
+              className="w-24 h-24 rounded-full relative cursor-pointer border border-rec/40 transition-transform hover:scale-[1.03] focus:outline-none disabled:opacity-60 disabled:cursor-wait"
               style={{
                 background: "radial-gradient(circle at 35% 30%, #FF6770, #C42730)",
                 boxShadow: `
@@ -38,10 +58,19 @@ export function Idle({ onStart }: Props) {
               <span className="absolute inset-[32%] rounded-md bg-white/95" />
             </button>
             <div>
-              <p className="font-display font-semibold text-[22px] tracking-tighter mb-1">Start recording</p>
+              <p className="font-display font-semibold text-[22px] tracking-tighter mb-1">
+                {busy ? "Choose a window…" : "Start recording"}
+              </p>
               <p className="text-text-1 text-[13px]">Or press <Kbd>⌘</Kbd><Kbd>⇧</Kbd><Kbd>R</Kbd> from anywhere.</p>
             </div>
           </div>
+          {startError && (
+            <div className="rounded-md border border-rec/30 bg-rec/[0.06] p-3 text-[12.5px]">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-rec mb-1">Couldn't start</p>
+              <p className="text-text-1 leading-snug">{friendly(startError)}</p>
+              <p className="font-mono text-[10.5px] text-text-2 mt-1.5 break-all">{startError}</p>
+            </div>
+          )}
           <AudioSourceSelector value={mode} onChange={setMode} isMac={isMac} />
         </section>
 
@@ -59,4 +88,13 @@ export function Idle({ onStart }: Props) {
       </div>
     </div>
   );
+}
+
+function friendly(raw: string): string {
+  const m = raw.toLowerCase();
+  if (m.includes("notallowederror")) return "macOS or you cancelled the picker. Hit record again and pick a window.";
+  if (m.includes("invalidstateerror")) return "The capture API needs a fresh click. Hit record again.";
+  if (m.includes("notreadableerror")) return "Another app is using your mic or camera. Close Zoom/Teams/OBS and try again.";
+  if (m.includes("notfounderror")) return "Couldn't find the requested device. Switch to Mic only or check BlackHole.";
+  return "Try again. Raw error below.";
 }

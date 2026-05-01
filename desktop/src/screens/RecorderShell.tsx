@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { RecorderSession, type SessionSnapshot } from "@/recording/session";
-import type { AudioMode } from "@/recording/capture";
+import type { AudioMode, CaptureBundle } from "@/recording/capture";
 import { useSession } from "@/store/session";
 import { RecordingPill } from "@/components/RecordingPill";
 import { registerRecording, transcribeRecording } from "@/lib/api";
 
-interface Props { mode: AudioMode; onDone(): void }
+interface Props { mode: AudioMode; capture: CaptureBundle; onDone(): void }
 
 const initial: SessionSnapshot = { state: "starting", elapsedMs: 0, level: 0, sourceLabel: "", bytes: 0, err: null };
 
-export function RecorderShell({ mode, onDone }: Props) {
+export function RecorderShell({ mode, capture, onDone }: Props) {
   const token = useSession((s) => s.token);
   const secrets = useSession((s) => s.secrets);
   const [snap, setSnap] = useState<SessionSnapshot>(initial);
@@ -21,7 +21,7 @@ export function RecorderShell({ mode, onDone }: Props) {
     if (!token || !secrets) return;
     const sess = new RecorderSession();
     sessRef.current = sess;
-    sess.start({ secrets, audioMode: mode, onUpdate: setSnap })
+    sess.start({ secrets, audioMode: mode, onUpdate: setSnap, capture })
       .then(async (result) => {
         setPhase("uploading");
         const id = await registerRecording(token, {
