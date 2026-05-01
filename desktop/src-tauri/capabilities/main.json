@@ -1,0 +1,11 @@
+{
+  "$schema": "https://schema.tauri.app/config/2.0",
+  "identifier": "main",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "global-shortcut:default",
+    "shell:default",
+    "dialog:default"
+  ]
+}

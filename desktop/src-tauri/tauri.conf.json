@@ -27,7 +27,7 @@
     ],
     "security": {
       "csp": "default-src 'self'; img-src 'self' data: blob: https:; media-src 'self' blob: https://*.r2.cloudflarestorage.com; connect-src 'self' https://*.r2.cloudflarestorage.com https://api.groq.com https://api.anthropic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com",
-      "capabilities": []
+      "capabilities": ["main"]
     },
     "trayIcon": {
       "iconPath": "icons/icon.png",
