@@ -32,8 +32,8 @@ export function RecordingsTable({ recordings }: { recordings: Recording[] }) {
             {formatDuration(r.durationMs)}
           </div>
           <div>{statusTag(r)}</div>
-          <div className={`font-mono text-[11.5px] tracking-wide ${r.shareToken ? "text-accent" : "text-text-2"}`}>
-            {r.shareToken ? `utter.app/s/${r.shareToken}` : "—"}
+          <div className={`font-mono text-[11.5px] tracking-wide truncate ${r.shareToken ? "text-accent" : "text-text-2"}`}>
+            {r.shareToken ? `/share/${r.shareToken}` : "—"}
           </div>
           <div className="text-right font-mono text-xs text-text-1">→</div>
         </Link>
