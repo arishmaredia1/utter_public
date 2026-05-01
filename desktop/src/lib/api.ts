@@ -30,3 +30,16 @@ export async function registerRecording(session: string, payload: RegisterPayloa
 export async function transcribeRecording(session: string, recordingId: string, r2Key: string): Promise<void> {
   await invoke("transcribe_recording", { session, recordingId, r2Key });
 }
+
+export interface BlackHoleStatus {
+  supported: boolean;
+  installed: boolean;
+}
+
+export async function audioCheckBlackHole(): Promise<BlackHoleStatus> {
+  return invoke<BlackHoleStatus>("audio_check_blackhole");
+}
+
+export async function audioInstallBlackHole(session: string): Promise<void> {
+  await invoke("audio_install_blackhole", { session });
+}

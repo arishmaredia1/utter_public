@@ -8,6 +8,7 @@ mod state;
 mod mongo;
 mod groq;
 mod cmds;
+mod audio_setup;
 
 use crate::state::AppState;
 
@@ -34,6 +35,8 @@ pub fn run() {
             cmds::list_recent,
             cmds::register_recording,
             cmds::transcribe_recording,
+            cmds::audio_check_blackhole,
+            cmds::audio_install_blackhole,
         ])
         .setup(|app| {
             let show = MenuItem::with_id(app, "show", "Show Utter", true, None::<&str>)?;

@@ -97,3 +97,16 @@ pub async fn transcribe_recording(state: State<'_, AppState>, session: String, r
         }
     }
 }
+
+use crate::audio_setup::{self, BlackHoleStatus};
+
+#[tauri::command]
+pub fn audio_check_blackhole() -> BlackHoleStatus {
+    audio_setup::check_status()
+}
+
+#[tauri::command]
+pub async fn audio_install_blackhole(state: State<'_, AppState>, session: String) -> AppResult<()> {
+    if !state.validate(&session) { return Err(AppError::Unauthorized); }
+    audio_setup::install().await
+}
