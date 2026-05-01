@@ -1,0 +1,49 @@
+"use client";
+import { useRef, useState } from "react";
+import Link from "next/link";
+import type { Recording } from "@utter/shared";
+import { TranscriptList } from "@/components/TranscriptList";
+import { VideoPlayer, type VideoPlayerHandle } from "@/components/VideoPlayer";
+import { formatDate, formatDuration } from "@/lib/format";
+
+export function Detail({ recording, videoUrl }: { recording: Recording; videoUrl: string }) {
+  const playerRef = useRef<VideoPlayerHandle | null>(null);
+  const [t, setT] = useState(0);
+  const segs = recording.transcript?.segments ?? [];
+
+  return (
+    <div className="grid grid-cols-[1fr_380px] min-h-screen">
+      <div className="border-r border-line-1 px-8 py-7 flex flex-col gap-5">
+        <nav className="font-mono text-[10.5px] uppercase tracking-wider text-text-2">
+          <Link href="/" className="text-text-1 hover:text-text-0">Recordings</Link>
+          <span className="mx-2 text-line-2">/</span>
+          <span>{recording.title}</span>
+        </nav>
+        <header>
+          <h1 className="font-display text-3xl font-semibold tracking-tighter mb-2">{recording.title}</h1>
+          <div className="flex flex-wrap gap-3.5 font-mono text-[10.5px] uppercase tracking-wider text-text-2">
+            <span>{formatDate(recording.createdAt)}</span>
+            <span className="text-line-2">·</span>
+            <span>{formatDuration(recording.durationMs)} duration</span>
+            <span className="text-line-2">·</span>
+            <span>{recording.transcript?.model ?? "—"}</span>
+            {recording.shareToken && (<>
+              <span className="text-line-2">·</span>
+              <span className="text-accent">Shared</span>
+            </>)}
+          </div>
+        </header>
+        <VideoPlayer ref={playerRef} src={videoUrl} onTimeUpdate={setT} />
+        <TranscriptList segments={segs} currentTime={t} onSeek={(s) => playerRef.current?.seekTo(s)} />
+      </div>
+      <aside
+        data-chat-panel-placeholder
+        className="flex flex-col bg-black/[0.16] min-h-screen border-l border-line-1 p-6"
+      >
+        <h3 className="font-display font-semibold text-base tracking-tight mb-2">Ask Claude</h3>
+        <p className="text-text-2 text-sm">Chat panel comes online once the streaming endpoint and UI are wired (Tasks 17–19).</p>
+        <p className="text-text-2 text-xs mt-auto font-mono uppercase tracking-wider">Recording id · {recording.id}</p>
+      </aside>
+    </div>
+  );
+}
