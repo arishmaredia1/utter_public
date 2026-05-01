@@ -1,0 +1,16 @@
+node_modules
+.next
+dist
+build
+*.log
+.env
+.env.local
+.env.*.local
+.DS_Store
+.vscode
+.idea
+coverage
+.turbo
+target
+src-tauri/target
+src-tauri/gen
