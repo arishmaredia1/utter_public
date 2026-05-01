@@ -44,3 +44,26 @@ export async function audioCheckBlackHole(): Promise<BlackHoleStatus> {
 export async function audioInstallBlackHole(session: string): Promise<void> {
   await invoke("audio_install_blackhole", { session });
 }
+
+export type ScreenRecordingState = "granted" | "denied" | "notapplicable";
+
+export interface PermissionStatus {
+  mac: boolean;
+  screenRecording: ScreenRecordingState;
+}
+
+export async function permissionsCheck(): Promise<PermissionStatus> {
+  return invoke<PermissionStatus>("permissions_check");
+}
+
+export async function permissionsRequestScreen(): Promise<boolean> {
+  return invoke<boolean>("permissions_request_screen");
+}
+
+export async function permissionsOpenScreenSettings(): Promise<void> {
+  await invoke("permissions_open_screen_settings");
+}
+
+export async function relaunchApp(): Promise<void> {
+  await invoke("app_relaunch");
+}

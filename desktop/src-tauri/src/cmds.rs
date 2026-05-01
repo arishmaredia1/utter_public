@@ -111,3 +111,25 @@ pub async fn audio_install_blackhole(state: State<'_, AppState>, session: String
     if !state.validate(&session) { return Err(AppError::Unauthorized); }
     audio_setup::install().await
 }
+
+use crate::permissions;
+
+#[tauri::command]
+pub fn permissions_check() -> permissions::PermissionStatus {
+    permissions::check()
+}
+
+#[tauri::command]
+pub fn permissions_request_screen() -> bool {
+    permissions::request_screen()
+}
+
+#[tauri::command]
+pub fn permissions_open_screen_settings() -> AppResult<()> {
+    permissions::open_screen_settings().map_err(|e| AppError::Other(e.to_string()))
+}
+
+#[tauri::command]
+pub fn app_relaunch(app: tauri::AppHandle) {
+    app.restart();
+}

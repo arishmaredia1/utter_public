@@ -9,6 +9,7 @@ mod mongo;
 mod groq;
 mod cmds;
 mod audio_setup;
+mod permissions;
 
 use crate::state::AppState;
 
@@ -37,6 +38,10 @@ pub fn run() {
             cmds::transcribe_recording,
             cmds::audio_check_blackhole,
             cmds::audio_install_blackhole,
+            cmds::permissions_check,
+            cmds::permissions_request_screen,
+            cmds::permissions_open_screen_settings,
+            cmds::app_relaunch,
         ])
         .setup(|app| {
             let show = MenuItem::with_id(app, "show", "Show Utter", true, None::<&str>)?;
