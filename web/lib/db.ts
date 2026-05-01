@@ -8,6 +8,9 @@ type RecordingDoc = Omit<Recording, "id" | "createdAt" | "transcript" | "chats">
 };
 export type { RecordingDoc };
 
+/** Used when MONGODB_URI has no database in its path (common for Atlas). */
+const DEFAULT_DB_NAME = "utter";
+
 let clientPromise: Promise<MongoClient> | null = null;
 let dbPromise: Promise<Db> | null = null;
 
@@ -20,9 +23,28 @@ function getClient(): Promise<MongoClient> {
   return clientPromise;
 }
 
+function dbNameFromUri(uri: string | undefined): string {
+  if (!uri) return DEFAULT_DB_NAME;
+  // Strip protocol, optional credentials, host[:port], then read the path segment.
+  // e.g. mongodb+srv://user:pw@cluster.example.net/utter?opt=1 → "utter"
+  // e.g. mongodb+srv://user:pw@cluster.example.net/?opt=1     → ""    → fallback
+  try {
+    // The driver accepts URIs with multiple comma-separated hosts which `URL`
+    // can't parse, so handle the path manually.
+    const afterScheme = uri.replace(/^mongodb(\+srv)?:\/\//, "");
+    const afterHost = afterScheme.split("/").slice(1).join("/");
+    const path = afterHost.split("?")[0]!.replace(/\/$/, "");
+    return path.length > 0 ? decodeURIComponent(path) : DEFAULT_DB_NAME;
+  } catch {
+    return DEFAULT_DB_NAME;
+  }
+}
+
 export async function getDb(): Promise<Db> {
   if (dbPromise) return dbPromise;
-  dbPromise = getClient().then((c) => c.db()); // db name comes from URI
+  const uri = process.env.MONGODB_URI;
+  const name = dbNameFromUri(uri);
+  dbPromise = getClient().then((c) => c.db(name));
   return dbPromise;
 }
 

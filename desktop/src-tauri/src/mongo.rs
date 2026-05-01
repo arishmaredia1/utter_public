@@ -7,6 +7,10 @@ use bson::{oid::ObjectId, DateTime as BsonDateTime};
 use crate::errors::{AppError, AppResult};
 use crate::env::EnvConfig;
 
+/// Used when MONGODB_URI doesn't include a database name in the path
+/// (common for Atlas connection strings that end with `?retryWrites=...`).
+const DEFAULT_DB_NAME: &str = "utter";
+
 static CLIENT: OnceCell<Arc<Client>> = OnceCell::new();
 
 async fn ensure_client(uri: &str) -> AppResult<Arc<Client>> {
@@ -20,7 +24,11 @@ async fn ensure_client(uri: &str) -> AppResult<Arc<Client>> {
 pub async fn db() -> AppResult<Database> {
     let env = EnvConfig::load()?;
     let client = ensure_client(&env.mongodb_uri).await?;
-    Ok(client.default_database().ok_or_else(|| AppError::Other("MONGODB_URI must include a database name".into()))?)
+    // Prefer the db name embedded in the URI, but fall back to "utter" so Atlas
+    // strings (which typically have no path component) just work.
+    Ok(client
+        .default_database()
+        .unwrap_or_else(|| client.database(DEFAULT_DB_NAME)))
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
