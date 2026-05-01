@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { open } from "@tauri-apps/plugin-shell";
 import { listRecent, type RecentRecording } from "@/lib/api";
 import { useSession } from "@/store/session";
 
@@ -11,6 +12,7 @@ const TAG: Record<RecentRecording["status"], { label: string; cls: string }> = {
 
 export function RecentList() {
   const token = useSession((s) => s.token);
+  const webAppUrl = useSession((s) => s.secrets?.webAppUrl ?? null);
   const [items, setItems] = useState<RecentRecording[]>([]);
 
   useEffect(() => {
@@ -18,13 +20,25 @@ export function RecentList() {
     listRecent(token).then(setItems).catch(() => setItems([]));
   }, [token]);
 
+  async function openRecording(id: string) {
+    if (!webAppUrl) return;
+    await open(`${webAppUrl}/r/${id}`).catch((e) => console.error("Failed to open browser:", e));
+  }
+
   if (items.length === 0) {
     return <p className="text-text-2 text-[13px]">No recordings yet. Press record to make your first.</p>;
   }
   return (
     <div className="flex flex-col gap-0.5">
       {items.map((r) => (
-        <div key={r.id} className="flex items-center gap-3 px-2 py-2.5 -mx-2 rounded hover:bg-bg-2">
+        <button
+          key={r.id}
+          type="button"
+          onClick={() => openRecording(r.id)}
+          disabled={r.status !== "ready"}
+          title={r.status === "ready" ? "Open in browser" : "Available once transcription finishes"}
+          className="text-left flex items-center gap-3 px-2 py-2.5 -mx-2 rounded hover:bg-bg-2 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        >
           <Thumb />
           <div className="flex-1 min-w-0">
             <p className="text-[13px] truncate">{r.title}</p>
@@ -35,7 +49,7 @@ export function RecentList() {
           <span className={`font-mono text-[9.5px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${TAG[r.status].cls}`}>
             ●&nbsp;{TAG[r.status].label}
           </span>
-        </div>
+        </button>
       ))}
     </div>
   );

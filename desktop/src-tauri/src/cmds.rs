@@ -28,11 +28,13 @@ pub fn logout(state: State<'_, AppState>) {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PublicSecrets {
     pub r2_account_id: String,
     pub r2_access_key_id: String,
     pub r2_secret_access_key: String,
     pub r2_bucket: String,
+    pub web_app_url: String,
 }
 
 #[tauri::command]
@@ -44,6 +46,7 @@ pub fn get_secrets(state: State<'_, AppState>, session: String) -> AppResult<Pub
         r2_access_key_id: env.r2_access_key_id,
         r2_secret_access_key: env.r2_secret_access_key,
         r2_bucket: env.r2_bucket,
+        web_app_url: env.web_app_url,
     })
 }
 

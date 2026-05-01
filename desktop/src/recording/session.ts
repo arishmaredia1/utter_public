@@ -83,14 +83,14 @@ export class RecorderSession {
 
       const s3 = new S3Client({
         region: "auto",
-        endpoint: `https://${secrets.r2_account_id}.r2.cloudflarestorage.com`,
+        endpoint: `https://${secrets.r2AccountId}.r2.cloudflarestorage.com`,
         credentials: {
-          accessKeyId: secrets.r2_access_key_id,
-          secretAccessKey: secrets.r2_secret_access_key,
+          accessKeyId: secrets.r2AccessKeyId,
+          secretAccessKey: secrets.r2SecretAccessKey,
         },
       });
       this.r2Key = `recordings/${dateFolder()}/${rid()}.${ext}`;
-      this.uploader = new Uploader({ s3, bucket: secrets.r2_bucket, key: this.r2Key, contentType });
+      this.uploader = new Uploader({ s3, bucket: secrets.r2Bucket, key: this.r2Key, contentType });
       await this.uploader.start();
 
       const recorder = new MediaRecorder(this.capture.stream, {

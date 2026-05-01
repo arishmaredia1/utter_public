@@ -2,10 +2,11 @@ import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
 
 export interface Secrets {
-  r2_account_id: string;
-  r2_access_key_id: string;
-  r2_secret_access_key: string;
-  r2_bucket: string;
+  r2AccountId: string;
+  r2AccessKeyId: string;
+  r2SecretAccessKey: string;
+  r2Bucket: string;
+  webAppUrl: string;
 }
 
 interface SessionState {
