@@ -26,7 +26,8 @@ export function sessionOptions(): SessionOptions {
 
 export async function getSession() {
   const c = await cookies();
-  return getIronSession<SessionData>(c, sessionOptions());
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return getIronSession<SessionData>(c as any, sessionOptions());
 }
 
 function timingSafeStringEq(a: string, b: string): boolean {
