@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
 
 export interface Secrets {
-  r2AccountId: string;
+  b2Region: string;
   r2AccessKeyId: string;
   r2SecretAccessKey: string;
   r2Bucket: string;

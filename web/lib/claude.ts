@@ -1,12 +1,12 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { formatTime, parseTime, type TranscriptSegment } from "@utter/shared";
 
-let cached: Anthropic | null = null;
-export function getAnthropic(): Anthropic {
+let cached: GoogleGenerativeAI | null = null;
+export function getAnthropic(): GoogleGenerativeAI {
   if (cached) return cached;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
-  cached = new Anthropic({ apiKey });
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
+  cached = new GoogleGenerativeAI(apiKey);
   return cached;
 }
 

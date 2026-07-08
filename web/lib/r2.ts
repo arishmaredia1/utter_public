@@ -5,13 +5,13 @@ let cached: S3Client | null = null;
 
 export function getR2Client(): S3Client {
   if (cached) return cached;
-  const accountId = process.env.R2_ACCOUNT_ID;
+  const region = process.env.B2_REGION;
   const accessKeyId = process.env.R2_ACCESS_KEY_ID;
   const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-  if (!accountId || !accessKeyId || !secretAccessKey) throw new Error("R2 credentials are not configured");
+  if (!region || !accessKeyId || !secretAccessKey) throw new Error("B2 credentials are not configured");
   cached = new S3Client({
-    region: "auto",
-    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+    region,
+    endpoint: `https://s3.${region}.backblazeb2.com`,
     credentials: { accessKeyId, secretAccessKey },
   });
   return cached;

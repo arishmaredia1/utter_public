@@ -5,7 +5,7 @@
 - Node 20+
 - pnpm 9+ (`corepack enable && corepack prepare pnpm@9.12.0 --activate`)
 - A running MongoDB (local: `brew install mongodb-community && brew services start mongodb-community`)
-- A Cloudflare R2 bucket
+- A Backblaze B2 bucket
 - API keys: Anthropic (web), Groq (desktop, plus optional retranscribe in web)
 
 ## Environment files
@@ -15,21 +15,27 @@ Copy and edit:
 - `web/.env.example` → `web/.env.local`
 - `desktop/.env.example` → `desktop/.env`
 
-## R2 bucket setup
+## B2 bucket setup
 
-1. Create a bucket in the Cloudflare dashboard (e.g. `utter`).
-2. Create an API token: **R2 → Manage R2 API Tokens → Create**, scope to your bucket with **Read & Write**. Save the access key + secret.
-3. Add the bucket id, access key id, secret access key, and the account id to both `.env` files.
-4. Add the lifecycle rule (R2 dashboard → bucket → Lifecycle): "Abort incomplete multipart uploads after 1 day".
-5. Add CORS rules:
+1. Sign up at [backblaze.com](https://www.backblaze.com) — no credit card required.
+2. Go to **B2 Cloud Storage → Buckets → Create a Bucket**. Name it `utter`, set **Private**.
+3. Note the **Endpoint** shown on the bucket page — it looks like `s3.us-west-004.backblazeb2.com`. The region is the middle segment (e.g. `us-west-004`). Set `B2_REGION` to that value.
+4. Go to **Application Keys → Add a New Application Key**:
+   - Name: `utter`
+   - Bucket: select `utter`
+   - Capabilities: **Read Files, Write Files, Delete Files, List Buckets, List Files**
+   - Click **Create New Key** — copy the **keyID** (`R2_ACCESS_KEY_ID`) and **applicationKey** (`R2_SECRET_ACCESS_KEY`). You won't see the key again.
+5. Add CORS rules for the bucket (B2 dashboard → bucket → **CORS Rules** → **Create CORS Rule**):
 
    ```json
    [
      {
-       "AllowedOrigins": ["tauri://localhost", "http://tauri.localhost"],
-       "AllowedMethods": ["GET", "PUT", "POST", "DELETE", "HEAD"],
-       "AllowedHeaders": ["*"],
-       "ExposeHeaders": ["ETag"]
+       "corsRuleName": "utter-desktop",
+       "allowedOrigins": ["https://tauri.localhost", "tauri://localhost", "http://tauri.localhost"],
+       "allowedOperations": ["s3_put", "s3_head"],
+       "allowedHeaders": ["*"],
+       "exposeHeaders": ["ETag"],
+       "maxAgeSeconds": 3600
      }
    ]
    ```

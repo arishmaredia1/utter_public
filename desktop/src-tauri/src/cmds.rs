@@ -30,7 +30,7 @@ pub fn logout(state: State<'_, AppState>) {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PublicSecrets {
-    pub r2_account_id: String,
+    pub b2_region: String,
     pub r2_access_key_id: String,
     pub r2_secret_access_key: String,
     pub r2_bucket: String,
@@ -42,7 +42,7 @@ pub fn get_secrets(state: State<'_, AppState>, session: String) -> AppResult<Pub
     if !state.validate(&session) { return Err(AppError::Unauthorized); }
     let env = EnvConfig::load()?;
     Ok(PublicSecrets {
-        r2_account_id: env.r2_account_id,
+        b2_region: env.b2_region,
         r2_access_key_id: env.r2_access_key_id,
         r2_secret_access_key: env.r2_secret_access_key,
         r2_bucket: env.r2_bucket,

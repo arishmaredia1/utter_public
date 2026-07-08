@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
 
 beforeEach(() => {
-  process.env.R2_ACCOUNT_ID = "abc";
+  process.env.B2_REGION = "us-west-004";
   process.env.R2_ACCESS_KEY_ID = "key";
   process.env.R2_SECRET_ACCESS_KEY = "secret";
   process.env.R2_BUCKET = "utter";

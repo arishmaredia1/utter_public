@@ -65,8 +65,8 @@ async fn sign_and_get(env: &EnvConfig, key: &str) -> AppResult<Vec<u8>> {
         None, None, "utter-desktop",
     );
     let conf = Builder::new()
-        .region(aws_sdk_s3::config::Region::new("auto"))
-        .endpoint_url(format!("https://{}.r2.cloudflarestorage.com", env.r2_account_id))
+        .region(aws_sdk_s3::config::Region::new(env.b2_region.clone()))
+        .endpoint_url(format!("https://s3.{}.backblazeb2.com", env.b2_region))
         .credentials_provider(creds)
         .behavior_version_latest()
         .build();

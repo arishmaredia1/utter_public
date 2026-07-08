@@ -82,8 +82,8 @@ export class RecorderSession {
       this.mimeType = contentType;
 
       const s3 = new S3Client({
-        region: "auto",
-        endpoint: `https://${secrets.r2AccountId}.r2.cloudflarestorage.com`,
+        region: secrets.b2Region,
+        endpoint: `https://s3.${secrets.b2Region}.backblazeb2.com`,
         credentials: {
           accessKeyId: secrets.r2AccessKeyId,
           secretAccessKey: secrets.r2SecretAccessKey,

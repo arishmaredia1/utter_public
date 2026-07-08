@@ -19,25 +19,30 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const lastUser = [...body.messages].reverse().find((m) => m.role === "user");
   if (lastUser) await appendChatTurn(id, { role: "user", content: lastUser.content });
 
-  const system = buildSystemPrompt({ title: rec.title, segments: rec.transcript.segments });
-  const client = getAnthropic();
+  const systemPrompt = buildSystemPrompt({ title: rec.title, segments: rec.transcript.segments });
+  const genAI = getAnthropic();
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    systemInstruction: systemPrompt,
+  });
+
+  // Convert message history to Gemini format (user/model roles, skip last user msg)
+  const history = body.messages.slice(0, -1).map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
+  const userMessage = body.messages[body.messages.length - 1]!.content;
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const enc = new TextEncoder();
       let assembled = "";
       try {
-        const resp = await client.messages.stream({
-          model: "claude-opus-4-7",
-          max_tokens: 2000,
-          system: [
-            { type: "text", text: system, cache_control: { type: "ephemeral" } },
-          ] as any,
-          messages: body.messages!.map((m) => ({ role: m.role, content: m.content })),
-        });
-        for await (const event of resp) {
-          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-            const t = event.delta.text;
+        const chat = model.startChat({ history });
+        const result = await chat.sendMessageStream(userMessage);
+        for await (const chunk of result.stream) {
+          const t = chunk.text();
+          if (t) {
             assembled += t;
             controller.enqueue(enc.encode(`data: ${JSON.stringify({ delta: t })}\n\n`));
           }
