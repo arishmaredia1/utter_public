@@ -1,6 +1,6 @@
 {
   "buildCommand": "pnpm --filter @utter/web... build",
   "installCommand": "pnpm install --frozen-lockfile",
-  "outputDirectory": "web/.next",
+  "outputDirectory": ".next",
   "framework": "nextjs"
 }
